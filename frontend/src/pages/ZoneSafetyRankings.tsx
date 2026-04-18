@@ -9,9 +9,64 @@ type ZoneSafetyRankingsProps = {
 
 export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneSafetyRankingsProps) {
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false)
+  const [plantName, setPlantName] = useState('')
+  const [question, setQuestion] = useState('')
+  const [answer, setAnswer] = useState('')
+  const [chatbotError, setChatbotError] = useState('')
+  const [isAskingChatbot, setIsAskingChatbot] = useState(false)
+
+  const chatbotApiUrl = import.meta.env.VITE_CHATBOT_API_URL || '/api/chatbot/ask/'
+
   function handleLogout() {
     localStorage.removeItem('hwita-authenticated')
     window.location.href = '/fishing-zones'
+  }
+
+  async function handleChatbotSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setChatbotError('')
+    setAnswer('')
+    setIsAskingChatbot(true)
+
+    try {
+      const response = await fetch(chatbotApiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          plant_name: plantName,
+          question
+        })
+      })
+
+      const rawPayload = await response.text()
+      let payload: { error?: string; error_code?: string; answer?: string } = {}
+      try {
+        payload = rawPayload ? JSON.parse(rawPayload) : {}
+      } catch {
+        payload = {}
+      }
+
+      if (!response.ok) {
+        if (payload.error_code === 'QUOTA_EXCEEDED') {
+          setChatbotError(t('restoration.chatbotQuotaExceeded'))
+          return
+        }
+        if ((payload.error || '').includes('GOOGLE_API_KEY')) {
+          setChatbotError(t('restoration.chatbotMissingApiKey'))
+          return
+        }
+        setChatbotError(payload.error || t('restoration.chatbotError'))
+        return
+      }
+
+      setAnswer(payload.answer || '')
+    } catch {
+      setChatbotError(t('restoration.chatbotBackendUnavailable'))
+    } finally {
+      setIsAskingChatbot(false)
+    }
   }
 
   const t = (key: string) => translate(language, key)
@@ -189,26 +244,63 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
             <section className="md:col-span-4">
               <div className="rounded-3xl bg-surface-container-low p-8 h-full flex flex-col justify-between">
                 <div>
-                  <span className="bg-secondary-container/50 text-on-secondary-container px-4 py-1 rounded-full text-xs font-bold tracking-widest uppercase">
-                    {t('restoration.rankStable')}
-                  </span>
-                  <h3 className="text-3xl font-bold text-primary mt-6 tracking-tight leading-tight">
-                    {t('restoration.secondaryZone')}
-                  </h3>
-                  <p className="text-on-surface-variant mt-3 body-md leading-relaxed">
-                    {t('restoration.secondaryDesc')}
-                  </p>
-                </div>
-                <div className="mt-8">
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="h-2 w-full bg-outline-variant/20 rounded-full overflow-hidden">
-                      <div className="h-full bg-secondary w-[88%]"></div>
-                    </div>
-                    <span className="text-sm font-bold text-secondary">88%</span>
+                  <div className="rounded-2xl bg-white/70 p-4 border border-[#d8c8b8]">
+                    <h4 className="text-sm font-extrabold uppercase tracking-widest text-primary mb-3">
+                      {t('restoration.chatbotTitle')}
+                    </h4>
+                    <form className="space-y-3" onSubmit={handleChatbotSubmit}>
+                      <div>
+                        <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1">
+                          {t('restoration.chatbotPlantLabel')}
+                        </label>
+                        <input
+                          className="w-full rounded-lg border border-[#d8c8b8] bg-white px-3 py-2 text-sm text-on-surface outline-none focus:ring-2 focus:ring-primary/25"
+                          onChange={(event) => setPlantName(event.target.value)}
+                          placeholder={t('restoration.chatbotPlantPlaceholder')}
+                          required
+                          value={plantName}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1">
+                          {t('restoration.chatbotQuestionLabel')}
+                        </label>
+                        <textarea
+                          className="w-full rounded-lg border border-[#d8c8b8] bg-white px-3 py-2 text-sm text-on-surface outline-none min-h-[92px] resize-y focus:ring-2 focus:ring-primary/25"
+                          onChange={(event) => setQuestion(event.target.value)}
+                          placeholder={t('restoration.chatbotQuestionPlaceholder')}
+                          required
+                          value={question}
+                        />
+                      </div>
+
+                      <button
+                        className="w-full py-2.5 bg-secondary text-white font-bold rounded-lg transition-all hover:brightness-95 disabled:opacity-60"
+                        disabled={isAskingChatbot}
+                        type="submit"
+                      >
+                        {isAskingChatbot ? t('restoration.chatbotLoading') : t('restoration.chatbotSubmit')}
+                      </button>
+                    </form>
+
+                    {chatbotError && (
+                      <p className="mt-3 text-sm font-semibold text-tertiary">
+                        {chatbotError}
+                      </p>
+                    )}
+
+                    {answer && (
+                      <div className="mt-4 rounded-xl bg-surface-container-low p-3 border border-outline-variant/20">
+                        <p className="text-xs font-bold uppercase tracking-widest text-primary/70 mb-1">
+                          {t('restoration.chatbotAnswerLabel')}
+                        </p>
+                        <p className="text-sm text-on-surface-variant leading-relaxed whitespace-pre-wrap">
+                          {answer}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                  <button className="w-full py-4 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
-                    {t('restoration.analytics')}
-                  </button>
                 </div>
               </div>
             </section>

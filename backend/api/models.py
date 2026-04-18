@@ -1,3 +1,14 @@
 from django.db import models
 
-# Create your models here.
+
+class ChatbotMessage(models.Model):
+	plant_name = models.CharField(max_length=120)
+	question = models.TextField()
+	answer = models.TextField()
+	created_at = models.DateTimeField(auto_now_add=True)
+
+	class Meta:
+		ordering = ['-created_at']
+
+	def __str__(self) -> str:
+		return f'{self.plant_name}: {self.question[:50]}'
