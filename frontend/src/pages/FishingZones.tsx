@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import ZoneRiskMapModal from '../components/ZoneRiskMapModal'
 import type { Language } from '../i18n'
 import { translate } from '../i18n'
 import heroImage from '../assets/hero.jpg'
@@ -10,7 +11,9 @@ type FishingZonesProps = {
 
 export default function FishingZones({ language, onLanguageChange }: FishingZonesProps) {
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false)
+  const [riskMapOpen, setRiskMapOpen] = useState(false)
   const t = (key: string) => translate(language, key)
+  const riskMapApiUrl = import.meta.env.VITE_RISK_MAP_API_URL || '/api/zones-risk-map/'
 
   return (
     <>
@@ -134,7 +137,11 @@ export default function FishingZones({ language, onLanguageChange }: FishingZone
             </div>
 
             <div className="flex flex-col items-center gap-6">
-              <button className="group relative px-10 py-6 bg-gradient-to-r from-primary to-primary-container text-white text-xl font-bold rounded-xl shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300">
+              <button
+                type="button"
+                onClick={() => setRiskMapOpen(true)}
+                className="group relative px-10 py-6 bg-gradient-to-r from-primary to-primary-container text-white text-xl font-bold rounded-xl shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+              >
                 {t('fishing.cta')}
               </button>
               <div className="text-on-surface/60 text-sm font-semibold">
@@ -203,6 +210,13 @@ export default function FishingZones({ language, onLanguageChange }: FishingZone
 
         <div className="h-24 md:hidden"></div>
       </div>
+
+      <ZoneRiskMapModal
+        apiUrl={riskMapApiUrl}
+        language={language}
+        open={riskMapOpen}
+        onClose={() => setRiskMapOpen(false)}
+      />
     </>
   );
 }

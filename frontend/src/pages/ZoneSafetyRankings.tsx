@@ -17,6 +17,8 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
 
   const chatbotApiUrl = import.meta.env.VITE_CHATBOT_API_URL || '/api/chatbot/ask/'
 
+  const tr = (key: string) => translate(language, key)
+
   function handleLogout() {
     localStorage.removeItem('hwita-authenticated')
     window.location.href = '/fishing-zones'
@@ -50,26 +52,27 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
 
       if (!response.ok) {
         if (payload.error_code === 'QUOTA_EXCEEDED') {
-          setChatbotError(t('restoration.chatbotQuotaExceeded'))
+          setChatbotError(tr('restoration.chatbotQuotaExceeded'))
           return
         }
-        if ((payload.error || '').includes('GOOGLE_API_KEY')) {
-          setChatbotError(t('restoration.chatbotMissingApiKey'))
+        if (
+          payload.error_code === 'MISSING_API_KEY' ||
+          (payload.error || '').includes('GOOGLE_API_KEY')
+        ) {
+          setChatbotError(tr('restoration.chatbotMissingApiKey'))
           return
         }
-        setChatbotError(payload.error || t('restoration.chatbotError'))
+        setChatbotError(payload.error || tr('restoration.chatbotError'))
         return
       }
 
       setAnswer(payload.answer || '')
     } catch {
-      setChatbotError(t('restoration.chatbotBackendUnavailable'))
+      setChatbotError(tr('restoration.chatbotBackendUnavailable'))
     } finally {
       setIsAskingChatbot(false)
     }
   }
-
-  const t = (key: string) => translate(language, key)
 
   return (
     <>
@@ -121,13 +124,13 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
                 className="text-neutral-500 dark:text-neutral-400 font-medium hover:text-cyan-600 dark:hover:text-cyan-200 transition-colors duration-300 text-base navbar-text"
                 href="/dashboard"
               >
-                {t('nav.dashboard')}
+                {tr('nav.dashboard')}
               </a>
               <a
                 className="text-cyan-700 dark:text-cyan-300 border-b-2 border-cyan-700 dark:border-cyan-300 pb-1 font-semibold transition-colors duration-300 text-base navbar-text"
                 href="/restoration"
               >
-                {t('nav.restoration')}
+                {tr('nav.restoration')}
               </a>
             </div>
 
@@ -136,16 +139,16 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
                 <button
                   onClick={() => setIsLanguageMenuOpen(!isLanguageMenuOpen)}
                   className="flex items-center justify-center w-10 h-10 rounded-full bg-white/80 border border-[#d8c8b8] hover:bg-white/100 transition-all hover:shadow-md"
-                  title={t('language.label')}
+                  title={tr('language.label')}
                 >
                   <span className="material-symbols-outlined text-[#006071]">public</span>
                 </button>
                 {isLanguageMenuOpen && (
                   <div className="absolute right-0 mt-2 bg-white border border-[#d8c8b8] rounded-lg shadow-lg z-10 min-w-[140px]">
                     {[
-                      { code: 'en' as Language, label: t('language.english') },
-                      { code: 'fr' as Language, label: t('language.french') },
-                      { code: 'ar' as Language, label: t('language.arabic') }
+                      { code: 'en' as Language, label: tr('language.english') },
+                      { code: 'fr' as Language, label: tr('language.french') },
+                      { code: 'ar' as Language, label: tr('language.arabic') }
                     ].map((lang) => (
                       <button
                         key={lang.code}
@@ -171,7 +174,7 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
                 type="button"
               >
                 <span className="material-symbols-outlined text-base">logout</span>
-                <span className="text-sm font-semibold">{t('nav.logout')}</span>
+                <span className="text-sm font-semibold">{tr('nav.logout')}</span>
               </button>
             </div>
           </div>
@@ -180,10 +183,10 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
         <main className="max-w-screen-2xl mx-auto px-6 py-12 pb-32">
           <header className="mb-16">
             <h1 className="text-5xl md:text-7xl font-extrabold text-primary tracking-tighter mb-4">
-              {t('restoration.title')}
+              {tr('restoration.title')}
             </h1>
             <p className="text-lg md:text-xl text-on-surface-variant max-w-2xl leading-relaxed">
-              {t('restoration.subtitle')}
+              {tr('restoration.subtitle')}
             </p>
           </header>
 
@@ -206,7 +209,7 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
                       >
                         verified_user
                       </span>
-                      {t('restoration.rankSafest')}
+                      {tr('restoration.rankSafest')}
                     </span>
                   </div>
                 </div>
@@ -214,27 +217,27 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
                 <div className="p-8">
                   <div className="flex justify-between items-end mb-6">
                     <div>
-                      <h2 className="text-4xl font-extrabold text-primary tracking-tight">{t('restoration.mainZone')}</h2>
-                      <p className="text-secondary font-semibold mt-1">{t('restoration.mainStatus')}</p>
+                      <h2 className="text-4xl font-extrabold text-primary tracking-tight">{tr('restoration.mainZone')}</h2>
+                      <p className="text-secondary font-semibold mt-1">{tr('restoration.mainStatus')}</p>
                     </div>
                     <div className="text-right">
                       <span className="text-5xl font-black text-secondary">98</span>
-                      <p className="text-xs font-bold uppercase tracking-widest text-secondary/60">{t('restoration.safetyIndex')}</p>
+                      <p className="text-xs font-bold uppercase tracking-widest text-secondary/60">{tr('restoration.safetyIndex')}</p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-3 gap-4 mt-2 p-4 rounded-2xl bg-surface-container-low">
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">{t('restoration.windSpeed')}</p>
+                      <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">{tr('restoration.windSpeed')}</p>
                       <p className="text-lg font-bold text-on-surface">4 knots</p>
                     </div>
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">{t('restoration.visibility')}</p>
+                      <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">{tr('restoration.visibility')}</p>
                       <p className="text-lg font-bold text-on-surface">12.4 km</p>
                     </div>
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">{t('restoration.advisory')}</p>
-                      <p className="text-lg font-bold text-secondary">{t('restoration.none')}</p>
+                      <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">{tr('restoration.advisory')}</p>
+                      <p className="text-lg font-bold text-secondary">{tr('restoration.none')}</p>
                     </div>
                   </div>
                 </div>
@@ -246,17 +249,17 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
                 <div>
                   <div className="rounded-2xl bg-white/70 p-4 border border-[#d8c8b8]">
                     <h4 className="text-sm font-extrabold uppercase tracking-widest text-primary mb-3">
-                      {t('restoration.chatbotTitle')}
+                      {tr('restoration.chatbotTitle')}
                     </h4>
                     <form className="space-y-3" onSubmit={handleChatbotSubmit}>
                       <div>
                         <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1">
-                          {t('restoration.chatbotPlantLabel')}
+                          {tr('restoration.chatbotPlantLabel')}
                         </label>
                         <input
                           className="w-full rounded-lg border border-[#d8c8b8] bg-white px-3 py-2 text-sm text-on-surface outline-none focus:ring-2 focus:ring-primary/25"
                           onChange={(event) => setPlantName(event.target.value)}
-                          placeholder={t('restoration.chatbotPlantPlaceholder')}
+                          placeholder={tr('restoration.chatbotPlantPlaceholder')}
                           required
                           value={plantName}
                         />
@@ -264,12 +267,12 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
 
                       <div>
                         <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1">
-                          {t('restoration.chatbotQuestionLabel')}
+                          {tr('restoration.chatbotQuestionLabel')}
                         </label>
                         <textarea
                           className="w-full rounded-lg border border-[#d8c8b8] bg-white px-3 py-2 text-sm text-on-surface outline-none min-h-[92px] resize-y focus:ring-2 focus:ring-primary/25"
                           onChange={(event) => setQuestion(event.target.value)}
-                          placeholder={t('restoration.chatbotQuestionPlaceholder')}
+                          placeholder={tr('restoration.chatbotQuestionPlaceholder')}
                           required
                           value={question}
                         />
@@ -280,7 +283,7 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
                         disabled={isAskingChatbot}
                         type="submit"
                       >
-                        {isAskingChatbot ? t('restoration.chatbotLoading') : t('restoration.chatbotSubmit')}
+                        {isAskingChatbot ? tr('restoration.chatbotLoading') : tr('restoration.chatbotSubmit')}
                       </button>
                     </form>
 
@@ -293,7 +296,7 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
                     {answer && (
                       <div className="mt-4 rounded-xl bg-surface-container-low p-3 border border-outline-variant/20">
                         <p className="text-xs font-bold uppercase tracking-widest text-primary/70 mb-1">
-                          {t('restoration.chatbotAnswerLabel')}
+                          {tr('restoration.chatbotAnswerLabel')}
                         </p>
                         <p className="text-sm text-on-surface-variant leading-relaxed whitespace-pre-wrap">
                           {answer}
@@ -312,12 +315,12 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
                     <span className="text-xl font-black text-primary/40">03</span>
                   </div>
                   <div>
-                    <h4 className="text-xl font-bold text-primary">{t('restoration.zone3')}</h4>
+                    <h4 className="text-xl font-bold text-primary">{tr('restoration.zone3')}</h4>
                     <p className="text-sm text-on-surface-variant mb-3">
-                      {t('restoration.zone3Desc')}
+                      {tr('restoration.zone3Desc')}
                     </p>
                     <span className="inline-flex items-center px-3 py-1 bg-surface-container-highest text-primary font-bold text-[10px] uppercase tracking-widest rounded-full">
-                      {t('restoration.safetyIndex')}: 74
+                      {tr('restoration.safetyIndex')}: 74
                     </span>
                   </div>
                 </div>
@@ -327,12 +330,12 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
                     <span className="text-xl font-black text-primary/40">04</span>
                   </div>
                   <div>
-                    <h4 className="text-xl font-bold text-primary">{t('restoration.zone4')}</h4>
+                    <h4 className="text-xl font-bold text-primary">{tr('restoration.zone4')}</h4>
                     <p className="text-sm text-on-surface-variant mb-3">
-                      {t('restoration.zone4Desc')}
+                      {tr('restoration.zone4Desc')}
                     </p>
                     <span className="inline-flex items-center px-3 py-1 bg-surface-container-highest text-primary font-bold text-[10px] uppercase tracking-widest rounded-full">
-                      {t('restoration.safetyIndex')}: 62
+                      {tr('restoration.safetyIndex')}: 62
                     </span>
                   </div>
                 </div>
@@ -342,10 +345,10 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
                     <span className="text-xl font-black text-primary/40">05</span>
                   </div>
                   <div>
-                    <h4 className="text-xl font-bold text-primary">{t('restoration.zone5')}</h4>
-                    <p className="text-sm text-on-surface-variant mb-3">{t('restoration.zone5Desc')}</p>
+                    <h4 className="text-xl font-bold text-primary">{tr('restoration.zone5')}</h4>
+                    <p className="text-sm text-on-surface-variant mb-3">{tr('restoration.zone5Desc')}</p>
                     <span className="inline-flex items-center px-3 py-1 bg-surface-container-highest text-primary font-bold text-[10px] uppercase tracking-widest rounded-full">
-                      {t('restoration.safetyIndex')}: 55
+                      {tr('restoration.safetyIndex')}: 55
                     </span>
                   </div>
                 </div>
@@ -360,7 +363,7 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
                 >
                   report
                 </span>
-                <h2 className="text-3xl font-extrabold text-on-surface tracking-tight uppercase">{t('restoration.highRisk')}</h2>
+                <h2 className="text-3xl font-extrabold text-on-surface tracking-tight uppercase">{tr('restoration.highRisk')}</h2>
                 <div className="h-[2px] grow bg-tertiary/10"></div>
               </div>
 
@@ -379,22 +382,22 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
                       </div>
                       <div>
                         <h4 className="text-2xl font-extrabold text-tertiary tracking-tight leading-none">
-                          {t('restoration.alert1Title')}
+                          {tr('restoration.alert1Title')}
                         </h4>
                         <p className="text-on-surface-variant font-medium mt-2">
-                          {t('restoration.alert1Desc')}
+                          {tr('restoration.alert1Desc')}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-8 px-6">
                       <div className="text-center">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-tertiary/60">{t('restoration.riskLevel')}</p>
-                        <p className="text-2xl font-black text-tertiary">{t('restoration.critical')}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-tertiary/60">{tr('restoration.riskLevel')}</p>
+                        <p className="text-2xl font-black text-tertiary">{tr('restoration.critical')}</p>
                       </div>
                       <div className="w-2 h-2 rounded-full bg-outline-variant/30"></div>
                       <div className="text-center">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-tertiary/60">{t('restoration.safetyIndex')}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-tertiary/60">{tr('restoration.safetyIndex')}</p>
                         <p className="text-2xl font-black text-tertiary">14</p>
                       </div>
                       <span className="material-symbols-outlined text-tertiary text-3xl">warning</span>
@@ -414,21 +417,21 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
                         />
                       </div>
                       <div>
-                        <h4 className="text-2xl font-extrabold text-tertiary tracking-tight leading-none">{t('restoration.alert2Title')}</h4>
+                        <h4 className="text-2xl font-extrabold text-tertiary tracking-tight leading-none">{tr('restoration.alert2Title')}</h4>
                         <p className="text-on-surface-variant font-medium mt-2">
-                          {t('restoration.alert2Desc')}
+                          {tr('restoration.alert2Desc')}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-8 px-6">
                       <div className="text-center">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-tertiary/60">{t('restoration.riskLevel')}</p>
-                        <p className="text-2xl font-black text-tertiary">{t('restoration.danger')}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-tertiary/60">{tr('restoration.riskLevel')}</p>
+                        <p className="text-2xl font-black text-tertiary">{tr('restoration.danger')}</p>
                       </div>
                       <div className="w-2 h-2 rounded-full bg-outline-variant/30"></div>
                       <div className="text-center">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-tertiary/60">{t('restoration.safetyIndex')}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-tertiary/60">{tr('restoration.safetyIndex')}</p>
                         <p className="text-2xl font-black text-tertiary">26</p>
                       </div>
                       <span className="material-symbols-outlined text-tertiary text-3xl">block</span>
@@ -443,11 +446,11 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
         <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-[#fff8f3]/80 dark:bg-[#0f171a]/80 backdrop-blur-xl rounded-t-3xl shadow-[0_-10px_40px_rgba(31,27,22,0.05)]">
           <a className="flex flex-col items-center justify-center text-[#006071]/50 dark:text-slate-500 px-4 py-2 hover:text-[#006071] transition-all active:scale-95 duration-150" href="/dashboard">
             <span className="material-symbols-outlined mb-1">dashboard</span>
-            <span className="font-['Manrope'] text-[11px] font-semibold uppercase tracking-widest">{t('nav.dashboard')}</span>
+            <span className="font-['Manrope'] text-[11px] font-semibold uppercase tracking-widest">{tr('nav.dashboard')}</span>
           </a>
           <a className="flex flex-col items-center justify-center bg-[#007B8F] text-white rounded-2xl px-6 py-2 shadow-lg shadow-[#007B8F]/30 active:scale-95 duration-150" href="/restoration">
             <span className="material-symbols-outlined mb-1">tsunami</span>
-            <span className="font-['Manrope'] text-[11px] font-semibold uppercase tracking-widest">{t('nav.restoration')}</span>
+            <span className="font-['Manrope'] text-[11px] font-semibold uppercase tracking-widest">{tr('nav.restoration')}</span>
           </a>
           <button
             className="flex flex-col items-center justify-center text-[#006071]/50 dark:text-slate-500 px-4 py-2 hover:text-[#006071] transition-all active:scale-95 duration-150"
@@ -455,7 +458,7 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
             type="button"
           >
             <span className="material-symbols-outlined mb-1">logout</span>
-            <span className="font-['Manrope'] text-[11px] font-semibold uppercase tracking-widest">{t('nav.signOut')}</span>
+            <span className="font-['Manrope'] text-[11px] font-semibold uppercase tracking-widest">{tr('nav.signOut')}</span>
           </button>
         </nav>
       </div>

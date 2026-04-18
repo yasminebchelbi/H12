@@ -118,12 +118,35 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-# Optional backend side env var loading for local dev without extra dependencies.
-ENV_FILE = BASE_DIR / '.env'
-if ENV_FILE.exists():
-    for line in ENV_FILE.read_text(encoding='utf-8').splitlines():
-        clean_line = line.strip()
-        if not clean_line or clean_line.startswith('#') or '=' not in clean_line:
+# Optional env file loading (no python-dotenv). Later files override earlier ones.
+def _load_dotenv_files(paths: list[Path]) -> None:
+    for env_path in paths:
+        if not env_path.exists():
             continue
-        key, value = clean_line.split('=', 1)
-        os.environ.setdefault(key.strip(), value.strip())
+        # utf-8-sig strips BOM from files saved by Windows Notepad
+        for raw_line in env_path.read_text(encoding='utf-8-sig').splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith('#') or '=' not in line:
+                continue
+            key, value = line.split('=', 1)
+            key = key.strip().lstrip('\ufeff')
+            value = value.strip()
+            if (value.startswith('"') and value.endswith('"')) or (
+                value.startswith("'") and value.endswith("'")
+            ):
+                value = value[1:-1]
+            # Only set non-empty values so a blank GOOGLE_API_KEY= line does not wipe a
+            # key from an earlier file or from the process environment.
+            if value:
+                os.environ[key] = value
+
+
+_load_dotenv_files([BASE_DIR.parent / '.env', BASE_DIR / '.env'])
+
+if DEBUG and not (os.environ.get('GOOGLE_API_KEY') or '').strip():
+    import logging
+
+    logging.getLogger(__name__).warning(
+        'GOOGLE_API_KEY is empty or missing. Add it to backend/.env (or H12/.env) '
+        'and restart runserver; the chatbot will keep using demo replies until then.'
+    )

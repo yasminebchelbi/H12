@@ -2,8 +2,9 @@ import json
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
+from .gabes_risk import compute_risk_map_points
 from .models import ChatbotMessage
 from .services import ask_gemini
 
@@ -51,3 +52,14 @@ def chatbot_ask(request):
 		},
 		status=201,
 	)
+
+
+@require_GET
+def zones_risk_map(request):
+	try:
+		data = compute_risk_map_points()
+	except FileNotFoundError as exc:
+		return JsonResponse({'error': str(exc), 'error_code': 'MODEL_NOT_FOUND'}, status=404)
+	except Exception as exc:
+		return JsonResponse({'error': str(exc), 'error_code': 'RISK_MAP_ERROR'}, status=500)
+	return JsonResponse(data)
