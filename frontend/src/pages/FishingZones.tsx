@@ -13,7 +13,6 @@ type FishingZonesProps = {
 
 export default function FishingZones({ language, onLanguageChange }: FishingZonesProps) {
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false)
-  const [riskMapOpen, setRiskMapOpen] = useState(false)
   const [fishAnalyzeOpen, setFishAnalyzeOpen] = useState(false)
   const t = (key: string) => translate(language, key)
   const riskMapApiUrl = import.meta.env.VITE_RISK_MAP_API_URL || '/api/zones-risk-map/'
@@ -115,7 +114,7 @@ export default function FishingZones({ language, onLanguageChange }: FishingZone
           </div>
         </header>
 
-        <main className="flex-grow flex flex-col items-center justify-center relative overflow-hidden px-6 py-20">
+        <main className="flex-grow flex flex-col items-center justify-start relative overflow-hidden px-6 py-12 md:py-16">
           <div className="absolute top-0 right-0 -z-10 w-1/2 h-full opacity-10 bg-gradient-to-l from-primary-container to-transparent"></div>
           <div className="absolute bottom-0 left-0 -z-10 w-full h-1/2 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]"></div>
 
@@ -140,16 +139,26 @@ export default function FishingZones({ language, onLanguageChange }: FishingZone
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-8 w-full">
+            <div className="flex flex-col items-stretch gap-10 w-full">
               <WeatherSafetyDecision language={language} />
+
+              <section aria-label={t('fishing.riskMapTitle')} className="w-full text-left">
+                <h2 className="text-xl md:text-2xl font-extrabold text-primary font-['Plus_Jakarta_Sans'] mb-3">
+                  {t('fishing.riskMapTitle')}
+                </h2>
+                <p className="text-on-surface-variant text-sm md:text-base max-w-3xl mb-4 leading-relaxed">
+                  {t('fishing.riskMapSubtitle')}
+                </p>
+                <ZoneRiskMapModal
+                  apiUrl={riskMapApiUrl}
+                  language={language}
+                  open
+                  variant="inline"
+                  onClose={() => {}}
+                />
+              </section>
+
               <div className="flex flex-col items-center gap-5">
-                <button
-                  type="button"
-                  onClick={() => setRiskMapOpen(true)}
-                  className="group relative px-12 py-8 md:px-16 md:py-10 min-w-[min(100%,22rem)] bg-gradient-to-r from-primary to-primary-container text-white text-2xl md:text-3xl font-bold rounded-2xl shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
-                >
-                  {t('fishing.cta')}
-                </button>
                 <button
                   type="button"
                   onClick={() => setFishAnalyzeOpen(true)}
@@ -224,12 +233,6 @@ export default function FishingZones({ language, onLanguageChange }: FishingZone
         <div className="h-24 md:hidden"></div>
       </div>
 
-      <ZoneRiskMapModal
-        apiUrl={riskMapApiUrl}
-        language={language}
-        open={riskMapOpen}
-        onClose={() => setRiskMapOpen(false)}
-      />
       <FishAnalyzeModal
         apiUrl={fishAnalyzeApiUrl}
         language={language}

@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { Language } from '../i18n'
 import { translate } from '../i18n'
+import DashboardHabitatChart from '../components/DashboardHabitatChart'
 
 type AdminDashboardProps = {
   language: Language
@@ -15,6 +16,19 @@ export default function AdminDashboard({ language, onLanguageChange }: AdminDash
   }
 
   const t = (key: string) => translate(language, key)
+
+  const habitatTrendData = useMemo(
+    () => [
+      { month: t('dashboard.monthJan'), index: 62 },
+      { month: t('dashboard.monthFeb'), index: 59 },
+      { month: t('dashboard.monthMar'), index: 64 },
+      { month: t('dashboard.monthApr'), index: 61 },
+      { month: t('dashboard.monthMay'), index: 68 },
+      { month: t('dashboard.monthJun'), index: 72 },
+      { month: t('dashboard.monthJul'), index: 76 }
+    ],
+    [language]
+  )
 
   return (
     <>
@@ -120,44 +134,81 @@ export default function AdminDashboard({ language, onLanguageChange }: AdminDash
 
         <main className="max-w-screen-2xl mx-auto px-6 py-8 pb-32">
           <div className="mb-10">
-            <h1 className="text-4xl font-extrabold text-primary tracking-tight mb-2">{t('dashboard.title')}</h1>
-            <p className="text-on-surface-variant text-lg max-w-2xl">
+            <h1 className="text-4xl md:text-5xl font-extrabold text-primary tracking-tight mb-3 font-['Plus_Jakarta_Sans']">
+              {t('dashboard.title')}
+            </h1>
+            <p className="text-on-surface-variant text-lg md:text-xl max-w-3xl leading-relaxed">
               {t('dashboard.subtitle')}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
             <div className="md:col-span-8 space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-surface-container-low p-6 rounded-xl relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-8 -mt-8 group-hover:scale-110 transition-transform duration-500"></div>
-                  <p className="text-sm font-bold uppercase tracking-widest text-primary/60 mb-2 font-label">
-                    {t('dashboard.metricCoralHealth')}
-                  </p>
-                  <h3 className="text-3xl font-extrabold text-primary mb-1">84.2%</h3>
-                  <p className="text-secondary text-sm font-semibold flex items-center gap-1">
-                    <span className="material-symbols-outlined text-xs">trending_up</span> {t('dashboard.metricCoralTrend')}
-                  </p>
-                </div>
-
-                <div className="bg-surface-container-low p-6 rounded-xl relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-secondary/5 rounded-full -mr-8 -mt-8 group-hover:scale-110 transition-transform duration-500"></div>
-                  <p className="text-sm font-bold uppercase tracking-widest text-primary/60 mb-2 font-label">
-                    {t('dashboard.metricActiveVessels')}
-                  </p>
-                  <h3 className="text-3xl font-extrabold text-primary mb-1">128</h3>
-                  <p className="text-on-surface-variant text-sm font-semibold">{t('dashboard.metricActiveVesselsDesc')}</p>
-                </div>
-
-                <div className="bg-surface-container-low p-6 rounded-xl relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-tertiary/5 rounded-full -mr-8 -mt-8 group-hover:scale-110 transition-transform duration-500"></div>
-                  <p className="text-sm font-bold uppercase tracking-widest text-primary/60 mb-2 font-label">
-                    {t('dashboard.metricRiskLevel')}
-                  </p>
-                  <h3 className="text-3xl font-extrabold text-tertiary mb-1">{t('dashboard.metricRiskLevelValue')}</h3>
-                  <p className="text-tertiary text-sm font-semibold flex items-center gap-1">
-                    <span className="material-symbols-outlined text-xs">verified</span> {t('dashboard.metricRiskStatus')}
-                  </p>
+              <div>
+                <h2 className="text-sm font-extrabold uppercase tracking-widest text-primary/70 mb-4 font-['Plus_Jakarta_Sans']">
+                  {t('dashboard.kpiSectionTitle')}
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                  <div className="bg-surface-container-low p-5 rounded-2xl border border-[#d8c8b8]/50 relative overflow-hidden group shadow-[0_12px_32px_rgba(0,96,113,0.04)]">
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-amber-500/10 rounded-full -mr-6 -mt-6 group-hover:scale-110 transition-transform duration-500" />
+                    <div className="relative flex gap-3">
+                      <span className="material-symbols-outlined text-[#006071] text-2xl shrink-0" aria-hidden>
+                        layers
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-[11px] font-bold uppercase tracking-widest text-primary/60 mb-1 font-label leading-snug">
+                          {t('dashboard.kpi1Label')}
+                        </p>
+                        <p className="text-2xl font-black text-amber-800 mb-1">{t('dashboard.kpi1Value')}</p>
+                        <p className="text-xs text-on-surface-variant leading-snug">{t('dashboard.kpi1Hint')}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-surface-container-low p-5 rounded-2xl border border-[#d8c8b8]/50 relative overflow-hidden group shadow-[0_12px_32px_rgba(0,96,113,0.04)]">
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-secondary/10 rounded-full -mr-6 -mt-6 group-hover:scale-110 transition-transform duration-500" />
+                    <div className="relative flex gap-3">
+                      <span className="material-symbols-outlined text-secondary text-2xl shrink-0" aria-hidden>
+                        notifications_active
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-[11px] font-bold uppercase tracking-widest text-primary/60 mb-1 font-label leading-snug">
+                          {t('dashboard.kpi2Label')}
+                        </p>
+                        <p className="text-2xl font-black text-primary mb-1">{t('dashboard.kpi2Value')}</p>
+                        <p className="text-xs text-on-surface-variant leading-snug">{t('dashboard.kpi2Hint')}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-surface-container-low p-5 rounded-2xl border border-[#d8c8b8]/50 relative overflow-hidden group shadow-[0_12px_32px_rgba(0,96,113,0.04)]">
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-primary/10 rounded-full -mr-6 -mt-6 group-hover:scale-110 transition-transform duration-500" />
+                    <div className="relative flex gap-3">
+                      <span className="material-symbols-outlined text-[#006071] text-2xl shrink-0" aria-hidden>
+                        eco
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-[11px] font-bold uppercase tracking-widest text-primary/60 mb-1 font-label leading-snug">
+                          {t('dashboard.kpi3Label')}
+                        </p>
+                        <p className="text-2xl font-black text-primary mb-1">{t('dashboard.kpi3Value')}</p>
+                        <p className="text-xs text-on-surface-variant leading-snug">{t('dashboard.kpi3Hint')}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-surface-container-low p-5 rounded-2xl border border-[#d8c8b8]/50 relative overflow-hidden group shadow-[0_12px_32px_rgba(0,96,113,0.04)]">
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-cyan-600/10 rounded-full -mr-6 -mt-6 group-hover:scale-110 transition-transform duration-500" />
+                    <div className="relative flex gap-3">
+                      <span className="material-symbols-outlined text-cyan-800 text-2xl shrink-0" aria-hidden>
+                        hub
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-[11px] font-bold uppercase tracking-widest text-primary/60 mb-1 font-label leading-snug">
+                          {t('dashboard.kpi4Label')}
+                        </p>
+                        <p className="text-2xl font-black text-primary mb-1">{t('dashboard.kpi4Value')}</p>
+                        <p className="text-xs text-on-surface-variant leading-snug">{t('dashboard.kpi4Hint')}</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -179,50 +230,11 @@ export default function AdminDashboard({ language, onLanguageChange }: AdminDash
                   </div>
                 </div>
 
-                <div className="h-64 flex items-end justify-between gap-2 px-2">
-                  <div className="flex flex-col items-center flex-1 gap-2">
-                    <div className="w-full bg-primary-container/20 rounded-t-lg relative h-[40%]">
-                      <div className="absolute bottom-0 w-full bg-primary-container rounded-t-lg h-[60%]"></div>
-                    </div>
-                    <span className="text-[10px] font-bold text-on-surface-variant font-label uppercase">{t('dashboard.monthJan')}</span>
-                  </div>
-                  <div className="flex flex-col items-center flex-1 gap-2">
-                    <div className="w-full bg-primary-container/20 rounded-t-lg relative h-[55%]">
-                      <div className="absolute bottom-0 w-full bg-primary-container rounded-t-lg h-[70%]"></div>
-                    </div>
-                    <span className="text-[10px] font-bold text-on-surface-variant font-label uppercase">{t('dashboard.monthFeb')}</span>
-                  </div>
-                  <div className="flex flex-col items-center flex-1 gap-2">
-                    <div className="w-full bg-primary-container/20 rounded-t-lg relative h-[65%]">
-                      <div className="absolute bottom-0 w-full bg-primary-container rounded-t-lg h-[55%]"></div>
-                    </div>
-                    <span className="text-[10px] font-bold text-on-surface-variant font-label uppercase">{t('dashboard.monthMar')}</span>
-                  </div>
-                  <div className="flex flex-col items-center flex-1 gap-2">
-                    <div className="w-full bg-primary-container/20 rounded-t-lg relative h-[50%]">
-                      <div className="absolute bottom-0 w-full bg-primary-container rounded-t-lg h-[80%]"></div>
-                    </div>
-                    <span className="text-[10px] font-bold text-on-surface-variant font-label uppercase">{t('dashboard.monthApr')}</span>
-                  </div>
-                  <div className="flex flex-col items-center flex-1 gap-2">
-                    <div className="w-full bg-primary-container/20 rounded-t-lg relative h-[80%]">
-                      <div className="absolute bottom-0 w-full bg-primary-container rounded-t-lg h-[85%]"></div>
-                    </div>
-                    <span className="text-[10px] font-bold text-on-surface-variant font-label uppercase">{t('dashboard.monthMay')}</span>
-                  </div>
-                  <div className="flex flex-col items-center flex-1 gap-2">
-                    <div className="w-full bg-primary-container/20 rounded-t-lg relative h-[90%]">
-                      <div className="absolute bottom-0 w-full bg-primary-container rounded-t-lg h-[75%]"></div>
-                    </div>
-                    <span className="text-[10px] font-bold text-on-surface-variant font-label uppercase">{t('dashboard.monthJun')}</span>
-                  </div>
-                  <div className="flex flex-col items-center flex-1 gap-2">
-                    <div className="w-full bg-primary-container/20 rounded-t-lg relative h-[75%]">
-                      <div className="absolute bottom-0 w-full bg-primary-container rounded-t-lg h-[95%]"></div>
-                    </div>
-                    <span className="text-[10px] font-bold text-on-surface-variant font-label uppercase">{t('dashboard.monthJul')}</span>
-                  </div>
-                </div>
+                <DashboardHabitatChart
+                  ariaLabel={t('dashboard.chartAriaLabel')}
+                  data={habitatTrendData}
+                  seriesLabel={t('dashboard.chartSeriesLabel')}
+                />
               </div>
             </div>
 
@@ -231,10 +243,9 @@ export default function AdminDashboard({ language, onLanguageChange }: AdminDash
                 <div className="aspect-video w-full relative">
                   <img
                     className="w-full h-full object-cover grayscale opacity-80"
-                    data-alt="Top-down satellite view of coastal coral reef systems with deep blue ocean and turquoise shallow waters"
-                    data-location="Coastal Fiji"
+                    data-alt="Satellite-style view of coastal sea and shoreline"
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUn1Wj6mDPLbEHGPQvdSKjHh4OjNd_sHWLVFb41dfrN2kxCfd2vs4vPU_sZvtNnMtLRbHYAM6jTyi89VATUHzsrC0qicccI2hbbH3Wux3j84p2vPzYBt0DTVmOTryf01d9fAjj0-cnOa0_GnIho8P4q2bRF7FrOh89WBM9HJea_M4RLNfXEpsAvbgjZYpJ0eb_uN5RsNgkj099GQbeoKAE8jjBcE9WB8OylkeVRFzWKDneAKqEXX6rGNznJd9CG0DDHrIneQDpAnI"
-                    alt="Protected marine sector"
+                    alt={t('dashboard.sectorImageAlt')}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-surface-container-low via-transparent to-transparent"></div>
                   <div className="absolute bottom-4 left-4 right-4 bg-surface/90 backdrop-blur-md p-3 rounded-lg border border-outline-variant/15">
@@ -320,9 +331,12 @@ export default function AdminDashboard({ language, onLanguageChange }: AdminDash
                   </div>
                 </div>
 
-                <button className="w-full mt-8 py-3 rounded-xl bg-surface-container-highest text-primary text-xs font-bold uppercase tracking-widest hover:bg-surface-dim transition-colors">
+                <a
+                  className="block w-full mt-8 py-3 rounded-xl bg-surface-container-highest text-primary text-xs font-bold uppercase tracking-widest hover:bg-surface-dim transition-colors text-center"
+                  href="/fishing-zones"
+                >
                   {t('dashboard.viewAudit')}
-                </button>
+                </a>
               </div>
             </aside>
           </div>

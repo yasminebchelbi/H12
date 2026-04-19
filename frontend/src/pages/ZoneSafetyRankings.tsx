@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import type { Language } from '../i18n'
 import { translate } from '../i18n'
 import SeagrassFusionPanel from '../components/SeagrassFusionPanel'
@@ -25,7 +25,7 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
     window.location.href = '/fishing-zones'
   }
 
-  async function handleChatbotSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleChatbotSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setChatbotError('')
     setAnswer('')
@@ -191,129 +191,76 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
             </p>
           </header>
 
-          <div className="mb-12">
-            <SeagrassFusionPanel language={language} />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10 lg:mb-12 items-start">
+            <div className="lg:col-span-8 min-w-0">
+              <SeagrassFusionPanel language={language} />
+            </div>
+
+            <section className="lg:col-span-4 min-w-0">
+              <div className="rounded-3xl bg-surface-container-low p-6 md:p-8 h-full border border-[#d8c8b8]/60 shadow-[0_20px_50px_rgba(0,96,113,0.06)]">
+                <h3 className="text-2xl md:text-3xl font-extrabold text-primary tracking-tight mb-4 font-['Plus_Jakarta_Sans']">
+                  {tr('restoration.chatbotMainTitle')}
+                </h3>
+                <div className="rounded-2xl bg-white/70 p-5 md:p-6 border border-[#d8c8b8]">
+                  <form className="space-y-4" onSubmit={handleChatbotSubmit}>
+                    <div>
+                      <label className="text-sm font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">
+                        {tr('restoration.chatbotPlantLabel')}
+                      </label>
+                      <input
+                        className="w-full rounded-lg border border-[#d8c8b8] bg-white px-3 py-2.5 text-base text-on-surface outline-none focus:ring-2 focus:ring-primary/25"
+                        onChange={(event) => setPlantName(event.target.value)}
+                        placeholder={tr('restoration.chatbotPlantPlaceholder')}
+                        required
+                        value={plantName}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-bold uppercase tracking-widest text-on-surface-variant block mb-1.5">
+                        {tr('restoration.chatbotQuestionLabel')}
+                      </label>
+                      <textarea
+                        className="w-full rounded-lg border border-[#d8c8b8] bg-white px-3 py-2.5 text-base text-on-surface outline-none min-h-[104px] resize-y focus:ring-2 focus:ring-primary/25"
+                        onChange={(event) => setQuestion(event.target.value)}
+                        placeholder={tr('restoration.chatbotQuestionPlaceholder')}
+                        required
+                        value={question}
+                      />
+                    </div>
+
+                    <button
+                      className="w-full py-3 text-base bg-secondary text-white font-bold rounded-lg transition-all hover:brightness-95 disabled:opacity-60"
+                      disabled={isAskingChatbot}
+                      type="submit"
+                    >
+                      {isAskingChatbot ? tr('restoration.chatbotLoading') : tr('restoration.chatbotSubmit')}
+                    </button>
+                  </form>
+
+                  {chatbotError && (
+                    <p className="mt-3 text-base font-semibold text-tertiary">
+                      {chatbotError}
+                    </p>
+                  )}
+
+                  {answer && (
+                    <div className="mt-4 rounded-xl bg-surface-container-low p-4 border border-outline-variant/20 max-h-[min(40vh,320px)] overflow-y-auto">
+                      <p className="text-sm font-bold uppercase tracking-widest text-primary/70 mb-2">
+                        {tr('restoration.chatbotAnswerLabel')}
+                      </p>
+                      <p className="text-base text-on-surface-variant leading-relaxed whitespace-pre-wrap">
+                        {answer}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </section>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-            <section className="md:col-span-8 group">
-              <div className="relative overflow-hidden rounded-3xl bg-surface-container-lowest shadow-[0_30px_60px_rgba(0,96,113,0.06)] h-full">
-                <div className="h-64 md:h-80 w-full relative overflow-hidden">
-                  <img
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    data-alt="serene tropical beach with crystal clear turquoise water and white sand under a soft afternoon sun with gentle ripples"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3I581U64mp3YgxEwHu_RWnTiVIT12wazqJNIlWhnaN1libNX7Yd9LhO2vWIp04GUB_bzG9c2vicNIlRZiJvuVy-HXeLkbwLHeBJqJSJDw-sjxJ1qjqwWkZ9CjHFAooOiNvpcz08ynN88SwMaWwrwLNL3vQDS6oZIRSGdr6xL0t-G06E3eHfbW6pJ4lbuc-ETxYE_V0rfWznvG7LPFBOVpUNMmxwJhA9mifoKgpKeFoRe8LDESeRfgaTogmKaEH9A0FwvoFWAz68s"
-                    alt="Azure Bay Reserve"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                  <div className="absolute top-6 left-6">
-                    <span className="bg-secondary-container text-on-secondary-container px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase flex items-center gap-2">
-                      <span
-                        className="material-symbols-outlined text-sm"
-                        style={{ fontVariationSettings: "'FILL' 1" }}
-                      >
-                        verified_user
-                      </span>
-                      {tr('restoration.rankSafest')}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="p-8">
-                  <div className="flex justify-between items-end mb-6">
-                    <div>
-                      <h2 className="text-4xl font-extrabold text-primary tracking-tight">{tr('restoration.mainZone')}</h2>
-                      <p className="text-secondary font-semibold mt-1">{tr('restoration.mainStatus')}</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-5xl font-black text-secondary">98</span>
-                      <p className="text-xs font-bold uppercase tracking-widest text-secondary/60">{tr('restoration.safetyIndex')}</p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-4 mt-2 p-4 rounded-2xl bg-surface-container-low">
-                    <div>
-                      <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">{tr('restoration.windSpeed')}</p>
-                      <p className="text-lg font-bold text-on-surface">4 knots</p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">{tr('restoration.visibility')}</p>
-                      <p className="text-lg font-bold text-on-surface">12.4 km</p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">{tr('restoration.advisory')}</p>
-                      <p className="text-lg font-bold text-secondary">{tr('restoration.none')}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section className="md:col-span-4">
-              <div className="rounded-3xl bg-surface-container-low p-8 h-full flex flex-col justify-between">
-                <div>
-                  <div className="rounded-2xl bg-white/70 p-4 border border-[#d8c8b8]">
-                    <h4 className="text-sm font-extrabold uppercase tracking-widest text-primary mb-3">
-                      {tr('restoration.chatbotTitle')}
-                    </h4>
-                    <form className="space-y-3" onSubmit={handleChatbotSubmit}>
-                      <div>
-                        <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1">
-                          {tr('restoration.chatbotPlantLabel')}
-                        </label>
-                        <input
-                          className="w-full rounded-lg border border-[#d8c8b8] bg-white px-3 py-2 text-sm text-on-surface outline-none focus:ring-2 focus:ring-primary/25"
-                          onChange={(event) => setPlantName(event.target.value)}
-                          placeholder={tr('restoration.chatbotPlantPlaceholder')}
-                          required
-                          value={plantName}
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1">
-                          {tr('restoration.chatbotQuestionLabel')}
-                        </label>
-                        <textarea
-                          className="w-full rounded-lg border border-[#d8c8b8] bg-white px-3 py-2 text-sm text-on-surface outline-none min-h-[92px] resize-y focus:ring-2 focus:ring-primary/25"
-                          onChange={(event) => setQuestion(event.target.value)}
-                          placeholder={tr('restoration.chatbotQuestionPlaceholder')}
-                          required
-                          value={question}
-                        />
-                      </div>
-
-                      <button
-                        className="w-full py-2.5 bg-secondary text-white font-bold rounded-lg transition-all hover:brightness-95 disabled:opacity-60"
-                        disabled={isAskingChatbot}
-                        type="submit"
-                      >
-                        {isAskingChatbot ? tr('restoration.chatbotLoading') : tr('restoration.chatbotSubmit')}
-                      </button>
-                    </form>
-
-                    {chatbotError && (
-                      <p className="mt-3 text-sm font-semibold text-tertiary">
-                        {chatbotError}
-                      </p>
-                    )}
-
-                    {answer && (
-                      <div className="mt-4 rounded-xl bg-surface-container-low p-3 border border-outline-variant/20">
-                        <p className="text-xs font-bold uppercase tracking-widest text-primary/70 mb-1">
-                          {tr('restoration.chatbotAnswerLabel')}
-                        </p>
-                        <p className="text-sm text-on-surface-variant leading-relaxed whitespace-pre-wrap">
-                          {answer}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section className="md:col-span-12 mt-4">
+            <section className="md:col-span-12">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="bg-surface-container-low p-6 rounded-3xl flex items-start gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-surface-container-highest flex items-center justify-center shrink-0">
@@ -380,9 +327,9 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
                       <div className="w-20 h-20 rounded-2xl overflow-hidden shrink-0">
                         <img
                           className="w-full h-full object-cover"
-                          data-alt="dramatic rough sea with large crashing waves against dark jagged volcanic rocks under a stormy dark sky"
+                          data-alt="industrial Gulf of Gabès waterfront with turbid water and jetties"
                           src="https://lh3.googleusercontent.com/aida-public/AB6AXuClg4od7ZvbO6nMk3Wm7vgnoMdZanwABdoTDFjwHbOyxK5W0a8rGYs42eOB-0kCAulZqPtU_gegaFyox-4D_pI83jXyipvwAA9l7M1O_4b8uwCrXpTeanLO28m1N0Bt48CQ6RIbdsn1MNi2pE75QWybR0w9a8wcrZDz1F1vAK6pi57rHwK-Iagl-gxBbZtgasqVrKZILgrAaLt4EisX04MKXGAsilj5ozItvH7ld2vU_vX0F3GPsMpSNjeSO4o_KeGiJa-7j1Rx-g0"
-                          alt="Iron Reach Cliffs"
+                          alt="Gulf of Gabès industrial coastal sector"
                         />
                       </div>
                       <div>
@@ -416,9 +363,9 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
                       <div className="w-20 h-20 rounded-2xl overflow-hidden shrink-0">
                         <img
                           className="w-full h-full object-cover"
-                          data-alt="misty ocean mouth where river meets sea with turbulent gray water and dense coastal fog obscuring the horizon"
+                          data-alt="shallow tidal inlet with choppy water and sandbanks, Boughrara area"
                           src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4p9zxuWtZed9D7fIOR9fK5He_0qNpH2PKsgIF3m9szL5Yl-3UMkofOn1Yd37y1ZpMvkHKfRbWmmVZOl6Xv9_r6PjJmYdAJ_jQOzNx-8qvu-LZ617KWhF3SjZBPty7225A0F0V7jU2FCaFj5sKOqCGSvHoJpKUSgRjCMfAV4q-U6cbx58ql1pd8kv6HKGsxoAekeM1kE2pE3LF81Fj0lt9NxaMUzaDJkDHT-gU3Kit6Bd_IBaR-bXOYCRXsRbhb6E0701qVJ4Bo0I"
-                          alt="The Void Mouth"
+                          alt="Boughrara tidal inlet"
                         />
                       </div>
                       <div>
