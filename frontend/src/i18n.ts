@@ -44,6 +44,15 @@ const translations: Record<Language, TranslationMap> = {
     'fishing.riskMapClose': 'Close',
     'fishing.riskMapLoading': 'Running model and building map…',
     'fishing.riskMapError': 'Could not load the map. Start the Django backend and try again.',
+    'fishing.riskMapErrorStatus':
+      'The map API returned HTTP {status}. From the backend folder run: python manage.py runserver (port 8000), then reload.',
+    'fishing.riskMapNetwork':
+      'Cannot reach the map API. Start Django from the backend folder: python manage.py runserver (port 8000).',
+    'fishing.riskMapNotJson':
+      'The map API did not return JSON (HTTP {status}). Ensure Django is running and the URL is correct.',
+    'fishing.riskMapTimeout': 'The map request timed out. Check that Django is running on port 8000.',
+    'fishing.riskMapRenderError':
+      'The map data loaded but the map failed to draw. Technical detail: {detail}',
     'fishing.riskDate': 'Date',
     'fishing.riskScore': 'Model confidence',
     'fishing.riskDistGCT': 'Distance to GCT',
@@ -51,6 +60,10 @@ const translations: Record<Language, TranslationMap> = {
     'fishing.riskIndustrial': 'Industrial site',
     'fishing.riskBlend': 'Blended risk (map color)',
     'fishing.riskProba': 'Class probabilities',
+    'fishing.riskTurbidityNtu': 'Turbidity (proxy) NTU',
+    'fishing.riskModelZoneRaw': 'Raw model class',
+    'fishing.riskZonePhysicsNote':
+      'Zones use NTU thresholds on a physics proxy when the model output is uniform on this grid.',
     'fishing.zoneSafe': 'SAFE',
     'fishing.zoneMedium': 'MEDIUM',
     'fishing.zoneDangerous': 'DANGEROUS',
@@ -62,6 +75,7 @@ const translations: Record<Language, TranslationMap> = {
     'fishing.mapStyleLight': 'Light (topographic)',
     'fishing.mapStyleStreet': 'Street map',
     'fishing.mapStyleSatellite': 'Satellite',
+    'fishing.mapStyleSatelliteEsri': 'Satellite HD (Esri)',
     'fishing.mapStyleSatelliteNasa': 'Satellite (NASA MODIS)',
     'fishing.mapStyleSatelliteHd': 'Satellite HD (Esri)',
     'fishing.mapStyleDark': 'Dark',
@@ -212,6 +226,15 @@ const translations: Record<Language, TranslationMap> = {
     'fishing.riskMapClose': 'Fermer',
     'fishing.riskMapLoading': 'Calcul du modele et construction de la carte…',
     'fishing.riskMapError': 'Impossible de charger la carte. Lancez le backend Django puis reessayez.',
+    'fishing.riskMapErrorStatus':
+      'L’API carte a renvoye HTTP {status}. Terminal : cd backend puis python manage.py runserver (port 8000), puis rechargez.',
+    'fishing.riskMapNetwork':
+      'API carte inaccessible. Lancez Django depuis le dossier backend : python manage.py runserver (port 8000).',
+    'fishing.riskMapNotJson':
+      'L’API carte n’a pas renvoye du JSON (HTTP {status}). Verifiez que Django tourne et que l’URL est correcte.',
+    'fishing.riskMapTimeout': 'Delai depasse. Verifiez que Django tourne sur le port 8000.',
+    'fishing.riskMapRenderError':
+      'Les donnees sont arrivees mais la carte n’a pas pu s’afficher. Detail : {detail}',
     'fishing.riskDate': 'Date',
     'fishing.riskScore': 'Confiance du modele',
     'fishing.riskDistGCT': 'Distance au GCT',
@@ -219,6 +242,10 @@ const translations: Record<Language, TranslationMap> = {
     'fishing.riskIndustrial': 'Site industriel',
     'fishing.riskBlend': 'Risque combine (couleur)',
     'fishing.riskProba': 'Probabilites par classe',
+    'fishing.riskTurbidityNtu': 'Turbidite (proxy) NTU',
+    'fishing.riskModelZoneRaw': 'Classe brute du modele',
+    'fishing.riskZonePhysicsNote':
+      'Les zones utilisent des seuils NTU sur un proxy physique lorsque le modele est uniforme sur cette grille.',
     'fishing.zoneSafe': 'Faible risque',
     'fishing.zoneMedium': 'Risque moyen',
     'fishing.zoneDangerous': 'Risque élevé',
@@ -230,6 +257,7 @@ const translations: Record<Language, TranslationMap> = {
     'fishing.mapStyleLight': 'Clair (topographique)',
     'fishing.mapStyleStreet': 'Routier',
     'fishing.mapStyleSatellite': 'Satellite',
+    'fishing.mapStyleSatelliteEsri': 'Satellite HD (Esri)',
     'fishing.mapStyleSatelliteNasa': 'Satellite (NASA MODIS)',
     'fishing.mapStyleSatelliteHd': 'Satellite HD (Esri)',
     'fishing.mapStyleDark': 'Sombre',
@@ -378,6 +406,15 @@ const translations: Record<Language, TranslationMap> = {
     'fishing.riskMapClose': 'إغلاق',
     'fishing.riskMapLoading': 'تشغيل النموذج وبناء الخريطة…',
     'fishing.riskMapError': 'تعذر تحميل الخريطة. شغّل خادم Django ثم أعد المحاولة.',
+    'fishing.riskMapErrorStatus':
+      'واجهة الخريطة أرجعت HTTP {status}. من مجلد backend شغّل: python manage.py runserver (المنفذ 8000) ثم أعد التحميل.',
+    'fishing.riskMapNetwork':
+      'تعذر الوصول إلى واجهة الخريطة. شغّل Django من مجلد backend: python manage.py runserver (المنفذ 8000).',
+    'fishing.riskMapNotJson':
+      'واجهة الخريطة لم تُرجع JSON (HTTP {status}). تأكد أن Django يعمل وأن عنوان الواجهة صحيح.',
+    'fishing.riskMapTimeout': 'انتهت مهلة الطلب. تأكد أن Django يعمل على المنفذ 8000.',
+    'fishing.riskMapRenderError':
+      'تم تحميل البيانات لكن تعذر رسم الخريطة. التفاصيل: {detail}',
     'fishing.riskDate': 'التاريخ',
     'fishing.riskScore': 'ثقة النموذج',
     'fishing.riskDistGCT': 'المسافة إلى GCT',
@@ -385,6 +422,10 @@ const translations: Record<Language, TranslationMap> = {
     'fishing.riskIndustrial': 'موقع صناعي',
     'fishing.riskBlend': 'المخلوط (لون الخريطة)',
     'fishing.riskProba': 'احتمالات الفئات',
+    'fishing.riskTurbidityNtu': 'العكارة (وكيل) NTU',
+    'fishing.riskModelZoneRaw': 'فئة النموذج الخام',
+    'fishing.riskZonePhysicsNote':
+      'تُستخدم عتبات NTU على وكيل فيزيائي عندما يكون مخرجات النموذج موحّدة على هذه الشبكة.',
     'fishing.zoneSafe': 'آمن',
     'fishing.zoneMedium': 'متوسط',
     'fishing.zoneDangerous': 'خطير',
@@ -396,6 +437,7 @@ const translations: Record<Language, TranslationMap> = {
     'fishing.mapStyleLight': 'فاتح (طبوغرافي)',
     'fishing.mapStyleStreet': 'طرق',
     'fishing.mapStyleSatellite': 'قمر صناعي',
+    'fishing.mapStyleSatelliteEsri': 'قمر صناعي عالي الدقة (Esri)',
     'fishing.mapStyleSatelliteNasa': 'قمر صناعي (NASA MODIS)',
     'fishing.mapStyleSatelliteHd': 'قمر صناعي عالي الدقة (Esri)',
     'fishing.mapStyleDark': 'داكن',
