@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Language } from '../i18n'
 import { translate } from '../i18n'
+import SeagrassFusionPanel from '../components/SeagrassFusionPanel'
 
 type ZoneSafetyRankingsProps = {
   language: Language
@@ -189,6 +190,10 @@ export default function ZoneSafetyRankings({ language, onLanguageChange }: ZoneS
               {tr('restoration.subtitle')}
             </p>
           </header>
+
+          <div className="mb-12">
+            <SeagrassFusionPanel language={language} />
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
             <section className="md:col-span-8 group">

@@ -8,6 +8,7 @@ from .gabes_risk import compute_risk_map_points
 from .models import ChatbotMessage
 from .services import ask_gemini
 from .yolo_fish import run_fish_detection
+from .seagrass_fusion import run_seagrass_fusion, seagrass_schema
 
 
 @csrf_exempt
@@ -91,3 +92,38 @@ def fish_analyze(request):
 		return JsonResponse({"error": str(exc), "error_code": "FISH_ANALYZE_ERROR"}, status=500)
 
 	return JsonResponse(result)
+
+
+@require_GET
+def seagrass_fusion_schema(request):
+	try:
+		return JsonResponse(seagrass_schema())
+	except Exception as exc:
+		return JsonResponse({"error": str(exc), "error_code": "SEAGRASS_SCHEMA_ERROR"}, status=500)
+
+
+@csrf_exempt
+@require_POST
+def seagrass_fusion_predict(request):
+	try:
+		payload = json.loads(request.body.decode("utf-8"))
+	except json.JSONDecodeError:
+		return JsonResponse({"error": "Invalid JSON body.", "error_code": "INVALID_JSON"}, status=400)
+	try:
+		out = run_seagrass_fusion(payload)
+	except ValueError as exc:
+		code = str(exc)
+		msg = {
+			"INVALID_PLANT": "plant must be 'posidonia' or 'cymodocea'.",
+			"POSIDONIA_VALUES_LEN": "For Posidonia with empty feature_order in config, send posidonia_values: array of 19 numbers.",
+			"CYM_FEATURE_LEN": "Wrong number of Cymodocea features.",
+			"POS_FEATURE_LEN": "Wrong number of Posidonia features.",
+		}.get(code.split(":")[0], code)
+		if code.startswith("MISSING_FEATURE:"):
+			msg = f"Missing feature: {code.split(':', 1)[1]}"
+		return JsonResponse({"error": msg, "error_code": code}, status=400)
+	except FileNotFoundError as exc:
+		return JsonResponse({"error": str(exc), "error_code": "MODEL_NOT_FOUND"}, status=503)
+	except Exception as exc:
+		return JsonResponse({"error": str(exc), "error_code": "SEAGRASS_FUSION_ERROR"}, status=500)
+	return JsonResponse(out)
