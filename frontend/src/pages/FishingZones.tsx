@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import FishAnalyzeModal from '../components/FishAnalyzeModal'
+import WeatherSafetyDecision from '../components/WeatherSafetyDecision'
 import ZoneRiskMapModal from '../components/ZoneRiskMapModal'
 import type { Language } from '../i18n'
 import { translate } from '../i18n'
@@ -12,8 +14,10 @@ type FishingZonesProps = {
 export default function FishingZones({ language, onLanguageChange }: FishingZonesProps) {
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false)
   const [riskMapOpen, setRiskMapOpen] = useState(false)
+  const [fishAnalyzeOpen, setFishAnalyzeOpen] = useState(false)
   const t = (key: string) => translate(language, key)
   const riskMapApiUrl = import.meta.env.VITE_RISK_MAP_API_URL || '/api/zones-risk-map/'
+  const fishAnalyzeApiUrl = import.meta.env.VITE_FISH_ANALYZE_API_URL || '/api/fish-analyze/'
 
   return (
     <>
@@ -136,16 +140,23 @@ export default function FishingZones({ language, onLanguageChange }: FishingZone
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-6">
-              <button
-                type="button"
-                onClick={() => setRiskMapOpen(true)}
-                className="group relative px-10 py-6 bg-gradient-to-r from-primary to-primary-container text-white text-xl font-bold rounded-xl shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
-              >
-                {t('fishing.cta')}
-              </button>
-              <div className="text-on-surface/60 text-sm font-semibold">
-                {t('fishing.latestUpdate')}
+            <div className="flex flex-col items-center gap-8 w-full">
+              <WeatherSafetyDecision language={language} />
+              <div className="flex flex-col items-center gap-5">
+                <button
+                  type="button"
+                  onClick={() => setRiskMapOpen(true)}
+                  className="group relative px-12 py-8 md:px-16 md:py-10 min-w-[min(100%,22rem)] bg-gradient-to-r from-primary to-primary-container text-white text-2xl md:text-3xl font-bold rounded-2xl shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+                >
+                  {t('fishing.cta')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFishAnalyzeOpen(true)}
+                  className="px-10 py-4 md:px-14 md:py-5 min-w-[min(100%,20rem)] rounded-2xl border-2 border-[#007B8F] bg-white text-[#006071] text-xl md:text-2xl font-bold shadow-md hover:bg-[#007B8F]/8 active:scale-[0.99] transition-all duration-300"
+                >
+                  {t('fishing.fishAnalyzeCta')}
+                </button>
               </div>
             </div>
 
@@ -164,8 +175,10 @@ export default function FishingZones({ language, onLanguageChange }: FishingZone
               </div>
 
               <div className="bg-primary p-8 rounded-2xl shadow-lg space-y-4 text-white flex flex-col justify-center">
-                <div className="text-4xl font-black">98%</div>
-                <div className="text-sm font-medium opacity-80 leading-snug">
+                <div className="text-3xl md:text-4xl font-black tracking-tight leading-tight">
+                  {t('fishing.aboutCardTitle')}
+                </div>
+                <div className="text-sm font-medium opacity-90 leading-snug">
                   {t('fishing.stableZonesDesc')}
                 </div>
               </div>
@@ -179,14 +192,14 @@ export default function FishingZones({ language, onLanguageChange }: FishingZone
 
               <div className="md:col-span-2 relative rounded-2xl overflow-hidden min-h-[160px] group">
                 <img
-                  alt="Ocean landscape"
+                  alt={t('fishing.bannerImageAlt')}
                   className="absolute inset-0 w-full h-full object-cover grayscale opacity-20 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
-                  data-alt="Calm deep blue ocean water at sunset with golden light reflecting on subtle ripples and clear horizon"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPCvBrOaylq2gw2JqfA4JR8hEsgU5Zf9r5Crh22SVPY_mXy8vT8f97GKHQqkmhkVzRyF8smjpkyyxGdEEC8NtBNdh4YRceWPu86NpZAka_drBuznDvvE2r6QYxAJB_Kuax45sy-b1aYN6SpYrA_P6qwPqelo2pi0qBIBt40q-cTLpaF40D460nTc4X7_uKA-w-l7H3O9KSPWGeSmjom5tL1_1nC142QxpC1ZFbqhQN3L793nGr3C6GIHHptUqnzYbqLjWrtloHmTg"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-surface-container-low to-transparent"></div>
-                <div className="relative p-8 flex flex-col justify-end h-full">
+                <div className="relative p-8 flex flex-col justify-end h-full min-h-[140px]">
                   <div className="text-primary font-bold text-lg uppercase tracking-widest">{t('fishing.coastalLedger')}</div>
+                  <p className="text-on-surface/85 text-sm mt-2 max-w-xl leading-relaxed">{t('fishing.coastalBannerSubtitle')}</p>
                 </div>
               </div>
             </div>
@@ -216,6 +229,12 @@ export default function FishingZones({ language, onLanguageChange }: FishingZone
         language={language}
         open={riskMapOpen}
         onClose={() => setRiskMapOpen(false)}
+      />
+      <FishAnalyzeModal
+        apiUrl={fishAnalyzeApiUrl}
+        language={language}
+        open={fishAnalyzeOpen}
+        onClose={() => setFishAnalyzeOpen(false)}
       />
     </>
   );

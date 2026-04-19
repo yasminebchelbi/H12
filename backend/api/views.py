@@ -7,6 +7,7 @@ from django.views.decorators.http import require_GET, require_POST
 from .gabes_risk import compute_risk_map_points
 from .models import ChatbotMessage
 from .services import ask_gemini
+from .yolo_fish import run_fish_detection
 
 
 @csrf_exempt
@@ -63,3 +64,30 @@ def zones_risk_map(request):
 	except Exception as exc:
 		return JsonResponse({'error': str(exc), 'error_code': 'RISK_MAP_ERROR'}, status=500)
 	return JsonResponse(data)
+
+
+@csrf_exempt
+@require_POST
+def fish_analyze(request):
+	"""POST multipart: field name `image` — YOLO ONNX fish / disease detection (same logic as YOLO TESTING Flask app)."""
+	f = request.FILES.get("image")
+	if not f:
+		return JsonResponse({"error": "No image file.", "error_code": "NO_FILE"}, status=400)
+	try:
+		raw = f.read()
+		if not raw:
+			return JsonResponse({"error": "Empty file.", "error_code": "EMPTY_FILE"}, status=400)
+		result = run_fish_detection(raw, f.name)
+	except FileNotFoundError as exc:
+		return JsonResponse({"error": str(exc), "error_code": "MODEL_NOT_FOUND"}, status=503)
+	except ValueError as exc:
+		code = str(exc) if exc.args else "BAD_INPUT"
+		msg = {
+			"UNSUPPORTED_FORMAT": "Unsupported format. Use PNG, JPG, JPEG, BMP, or WEBP.",
+			"UNREADABLE_IMAGE": "Could not read this image.",
+		}.get(code, "Invalid image.")
+		return JsonResponse({"error": msg, "error_code": code}, status=400)
+	except Exception as exc:
+		return JsonResponse({"error": str(exc), "error_code": "FISH_ANALYZE_ERROR"}, status=500)
+
+	return JsonResponse(result)
